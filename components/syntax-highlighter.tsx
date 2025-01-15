@@ -1,8 +1,7 @@
 "use client";
-
-import { startTransition, useEffect, useState } from "react";
-import { codeToHtml } from "shiki/bundle/web";
-
+import { useEffect, useState } from "react";
+import hljs from "highlight.js";
+import "highlight.js/styles/github.css"; // Import the desired Highlight.js theme
 export default function SyntaxHighlighter({
   code,
   language,
@@ -10,27 +9,26 @@ export default function SyntaxHighlighter({
   code: string;
   language: string;
 }) {
-  const [codeHtml, setCodeHtml] = useState("");
-
+  const [highlightedCode, setHighlightedCode] = useState("");
   useEffect(() => {
     if (!code) return;
-
-    startTransition(async () => {
-      const html = await codeToHtml(code, {
-        lang: language,
-        theme: "github-light-default",
-      });
-
-      startTransition(() => {
-        setCodeHtml(html);
-      });
-    });
+    try {
+      // Highlight the code
+      const highlighted = hljs.highlight(language, code, true).value;
+      setHighlightedCode(highlighted);
+    } catch (error) {
+      console.error("Error highlighting code:", error);
+      setHighlightedCode(
+        code.replace(/</g, "&lt;").replace(/>/g, "&gt;"), // Escape HTML tags for safety
+      );
+    }
   }, [code, language]);
-
   return (
-    <div
-      className="p-4 text-sm"
-      dangerouslySetInnerHTML={{ __html: codeHtml }}
-    />
+    <pre className="overflow-auto rounded bg-gray-100 p-4 text-sm">
+      <code
+        className={`hljs ${language}`}
+        dangerouslySetInnerHTML={{ __html: highlightedCode }}
+      />
+    </pre>
   );
 }

@@ -63,9 +63,10 @@ export default async function Page({
 }
 
 const getGeneratedAppByID = cache(async (id: string) => {
-  return client.generatedApp.findUnique({
+  return client.GeneratedApp.findUnique({
     where: {
       id,
     },
   });
 });
+

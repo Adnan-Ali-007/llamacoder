@@ -29,8 +29,10 @@ export default function CodeViewer({
   onTabChange: (v: "code" | "preview") => void;
   onClose: () => void;
 }) {
+  //console.log(streamText);
   const app = message ? extractFirstCodeBlock(message.content) : undefined;
   const streamAppParts = splitByFirstCodeFence(streamText);
+  console.log(streamText);
   const streamApp = streamAppParts.find(
     (p) =>
       p.type === "first-code-fence-generating" || p.type === "first-code-fence",
@@ -42,12 +44,20 @@ export default function CodeViewer({
   const code = streamApp ? streamApp.content : app?.code || "";
   const language = streamApp ? streamApp.language : app?.language || "";
   const title = streamApp ? streamApp.filename.name : app?.filename?.name || "";
-  const layout = ["python", "ts", "js", "javascript", "typescript"].includes(
-    language,
-  )
+  const layout = [
+    "python",
+    "ts",
+    "js",
+    "javascript",
+    "typescript",
+    "rust",
+    "sh",
+    "toml",
+  ].includes(language)
     ? "two-up"
     : "tabbed";
-
+  //console.log(layout);
+  console.log(language);
   const assistantMessages = chat.messages.filter((m) => m.role === "assistant");
   const currentVersion = streamApp
     ? assistantMessages.length
